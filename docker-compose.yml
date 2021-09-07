@@ -1,0 +1,46 @@
+version: "0.1"
+services:
+  auctioner:
+    build:
+      context: ./auctioner
+    container_name: auctioner
+    command: python -u auctioner/app.py
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/auctionapp
+    networks:
+      - common-network
+  bidder1:
+    build:
+      context: ./bidder
+    container_name: bidder1
+    environment:
+      - DELAY=100
+    depends_on:
+      - auctioner
+    command: python -u bidder/app.py
+    ports:
+      - "5001:5000"
+    volumes:
+      - .:/app
+    networks:
+      - common-network
+  bidder2:
+    build:
+      context: ./bidder
+    container_name: bidder2
+    environment:
+      - DELAY=100
+    depends_on:
+      - auctioner
+    command: python -u bidder/app.py
+    ports:
+      - "5002:5000"
+    volumes:
+      - .:/app
+    networks:
+      - common-network
+networks:
+  common-network:
+    driver: "bridge"
